@@ -1,9 +1,11 @@
 package com.example.first;
 
+import com.example.common.Order;
 import java.util.UUID;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 import com.example.common.Customer;
@@ -24,8 +26,16 @@ class Controller {
 
 	@GetMapping("/customer")
 	Mono<Customer> customer() {
-		var customer = new Customer(UUID.randomUUID(), "Simon");
+		return Mono.just(Customer.fake());
+	}
 
-		return Mono.just(customer);
+	@GetMapping("/order")
+	Mono<Order> order() {
+		return Mono.just(Order.fake());
+	}
+
+	@GetMapping("/order/{customer}")
+	Mono<Order> orderCustomer(@PathVariable String customer) {
+		return Mono.just(Order.fake(UUID.fromString(customer)));
 	}
 }
