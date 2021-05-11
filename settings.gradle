@@ -3,3 +3,4 @@ rootProject.name = 'spring-test'
 include(':first', ':common')
 include(':customer')
 include(':security')
+include(':security-reactive')
