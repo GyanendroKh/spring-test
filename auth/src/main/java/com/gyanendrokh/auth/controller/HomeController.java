@@ -1,9 +1,9 @@
 package com.gyanendrokh.auth.controller;
 
-import com.gyanendrokh.auth.dto.BaseUserDto;
-import com.gyanendrokh.auth.dto.BaseUserRegisterDto;
+import com.gyanendrokh.auth.dto.UserDto;
+import com.gyanendrokh.auth.dto.UserRegistrationDto;
 import com.gyanendrokh.auth.service.RegistrationService;
-import com.gyanendrokh.auth.user.BaseUser;
+import com.gyanendrokh.auth.user.User;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,13 +18,13 @@ public class HomeController {
   private final RegistrationService registrationService;
 
   @GetMapping("/")
-  BaseUserDto index(@AuthenticationPrincipal BaseUser user) {
-    return BaseUserDto.from(user);
+  UserDto index(@AuthenticationPrincipal User user) {
+    return UserDto.from(user);
   }
 
   @PostMapping("/register")
-  BaseUserDto register(@RequestBody BaseUserRegisterDto data) {
-    return BaseUserDto.from(registrationService.register(data));
+  UserDto register(@RequestBody UserRegistrationDto data) {
+    return UserDto.from(registrationService.register(data));
   }
 
 }

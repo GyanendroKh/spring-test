@@ -1,6 +1,6 @@
 package com.gyanendrokh.auth.security;
 
-import com.gyanendrokh.auth.user.BaseUserDetailsService;
+import com.gyanendrokh.auth.user.UserDetailsService;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 @AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-  private final BaseUserDetailsService userService;
+  private final UserDetailsService userService;
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {

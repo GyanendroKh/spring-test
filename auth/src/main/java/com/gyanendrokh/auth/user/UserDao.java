@@ -2,9 +2,9 @@ package com.gyanendrokh.auth.user;
 
 import java.util.Optional;
 
-public interface BaseUserDao {
+public interface UserDao {
 
-  Optional<BaseUserEntity> findUserByUsername(String username);
+  Optional<UserEntity> findUserByUsername(String username);
 
   boolean isUsernameExist(String username);
 }

@@ -14,13 +14,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 @Setter
 @Getter
-public class BaseUser implements UserDetails {
+public class User implements UserDetails {
 
   private String username;
   private String password;
   private List<? extends  GrantedAuthority> authorities = Collections.emptyList();
 
-  public BaseUser(BaseUserEntity entity) {
+  public User(UserEntity entity) {
     this.username = entity.getUsername();
     this.password = entity.getPassword();
   }

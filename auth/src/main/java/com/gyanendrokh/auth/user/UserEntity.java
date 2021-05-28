@@ -16,8 +16,8 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "BaseUser")
-public class BaseUserEntity {
+@Table(name = "User")
+public class UserEntity {
 
   @Id()
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +29,7 @@ public class BaseUserEntity {
   @Column()
   String password;
 
-  public BaseUserEntity(String username, String password) {
+  public UserEntity(String username, String password) {
     this.username = username;
     this.password = password;
   }

@@ -1,19 +1,21 @@
 package com.gyanendrokh.auth.dto;
 
+import com.gyanendrokh.auth.user.User;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 @Getter
 @Setter
-public class BaseUserRegisterDto {
+public class UserDto {
 
   private String username;
 
-  private String password;
+  public static UserDto from(User user) {
+    return new UserDto(user.getUsername());
+  }
+
 }

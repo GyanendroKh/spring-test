@@ -1,10 +1,10 @@
 package com.gyanendrokh.auth.service;
 
-import com.gyanendrokh.auth.dto.BaseUserRegisterDto;
+import com.gyanendrokh.auth.dto.UserRegistrationDto;
 import com.gyanendrokh.auth.exception.UsernameExistException;
-import com.gyanendrokh.auth.repository.BaseUserRepository;
-import com.gyanendrokh.auth.user.BaseUser;
-import com.gyanendrokh.auth.user.BaseUserEntity;
+import com.gyanendrokh.auth.repository.UserRepository;
+import com.gyanendrokh.auth.user.User;
+import com.gyanendrokh.auth.user.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,16 +14,16 @@ import org.springframework.stereotype.Service;
 public class RegistrationService {
 
   private final PasswordEncoder passwordEncoder;
-  private final BaseUserRepository repository;
+  private final UserRepository repository;
 
-  public BaseUser register(BaseUserRegisterDto data) {
+  public User register(UserRegistrationDto data) {
     if (repository.findByUsername(data.getUsername()).isPresent()) {
       throw new UsernameExistException(data.getUsername());
     }
 
-    BaseUserEntity userEntity = new BaseUserEntity(
+    UserEntity userEntity = new UserEntity(
       data.getUsername(), passwordEncoder.encode(data.getPassword()));
-    BaseUser user = new BaseUser(userEntity);
+    User user = new User(userEntity);
 
     repository.save(userEntity);
 

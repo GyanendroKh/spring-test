@@ -2,20 +2,20 @@ package com.gyanendrokh.auth.user;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class BaseUserDetailsService implements UserDetailsService {
+public class UserDetailsService implements
+  org.springframework.security.core.userdetails.UserDetailsService {
 
-  private final BaseUserDao userDao;
+  private final UserDao userDao;
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     return userDao.findUserByUsername(username)
-      .map(BaseUser::new)
+      .map(User::new)
       .orElseThrow(() -> new UsernameNotFoundException(getUsernameNotFoundMsg(username)));
   }
 

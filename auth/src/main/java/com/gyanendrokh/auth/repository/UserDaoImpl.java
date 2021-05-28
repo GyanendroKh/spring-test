@@ -1,19 +1,19 @@
 package com.gyanendrokh.auth.repository;
 
-import com.gyanendrokh.auth.user.BaseUserDao;
-import com.gyanendrokh.auth.user.BaseUserEntity;
+import com.gyanendrokh.auth.user.UserDao;
+import com.gyanendrokh.auth.user.UserEntity;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @AllArgsConstructor
-public class BaseUserDaoImpl implements BaseUserDao {
+public class UserDaoImpl implements UserDao {
 
-  private final BaseUserRepository repository;
+  private final UserRepository repository;
 
   @Override
-  public Optional<BaseUserEntity> findUserByUsername(String username) {
+  public Optional<UserEntity> findUserByUsername(String username) {
     return repository.findByUsername(username);
   }
 
