@@ -32,9 +32,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       .and()
       .authorizeRequests().antMatchers("/register").permitAll()
       .and()
+      .authorizeRequests().antMatchers("/login").permitAll()
+      .and()
       .authorizeRequests().anyRequest().authenticated()
       .and()
-      .formLogin().and().httpBasic();
+      .httpBasic();
   }
 
   @Override
