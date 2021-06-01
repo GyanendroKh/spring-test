@@ -1,15 +1,23 @@
 package com.gyanendrokh.auth.filter;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.gyanendrokh.auth.service.AuthService;
 import com.gyanendrokh.auth.user.User;
 import com.gyanendrokh.auth.user.UserDetailsService;
+import com.gyanendrokh.auth.user.UserJwtToken;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Locale;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -32,35 +40,70 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     @NotNull HttpServletResponse response,
     FilterChain filterChain
   ) throws ServletException, IOException {
-    var authentication = new UsernamePasswordAuthenticationToken(user, token, user.getAuthorities());
-    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-    SecurityContextHolder.getContext().setAuthentication(authentication);
+    authenticate(request);
 
     filterChain.doFilter(request, response);
   }
 
   @Override
-  protected boolean shouldNotFilter(HttpServletRequest request) {
+  protected boolean shouldNotFilter(@NotNull HttpServletRequest request) {
+    try {
+      token = extractToken(request);
+      user = verifyAndLoadUser(token);
+
+      return false;
+    } catch (InvalidTokenException | UsernameNotFoundException | JWTVerificationException e) {
+      return true;
+    }
+  }
+
+  private String extractToken(HttpServletRequest request) throws InvalidTokenException {
     String authorization = request.getHeader("Authorization");
 
-    if (authorization != null) {
-      String[] auths = authorization.split(" ");
+    if (!Strings.isNullOrEmpty(authorization)) {
+      Iterator<String> auths = Splitter.on(" ")
+        .omitEmptyStrings()
+        .trimResults()
+        .split(authorization)
+        .iterator();
 
-      if (auths.length == 2) {
-        if (auths[0].toLowerCase(Locale.ROOT).equals("bearer")) {
-          token = auths[1];
+      if (auths.hasNext() && auths.next().toLowerCase(Locale.ROOT).equals("bearer")) {
+        if (auths.hasNext()) {
+          String next = auths.next();
 
-          try {
-            user = userService.loadUserByUsername(auths[1]);
-            return false;
-          } catch (UsernameNotFoundException e) {
-            // Nothing to do
+          if (!auths.hasNext()) {
+            return next;
           }
         }
       }
     }
 
-    return true;
+    throw new InvalidTokenException();
+  }
+
+  private void authenticate(HttpServletRequest request) {
+    var authentication = new UserJwtToken(user, token, user.getAuthorities());
+    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+  }
+
+  private DecodedJWT verifyToken(String raw) throws JWTVerificationException {
+    JWTVerifier verifier = JWT.require(AuthService.getJwtAlgorithm())
+      .build();
+
+    return verifier.verify(raw);
+  }
+
+  private User loadUser(DecodedJWT jwt) {
+    return userService.loadUserByUsername(jwt.getSubject());
+  }
+
+  private User verifyAndLoadUser(String raw) {
+    return loadUser(verifyToken(raw));
+  }
+
+  private static class InvalidTokenException extends Exception {
+    // Nothing to do
   }
 }

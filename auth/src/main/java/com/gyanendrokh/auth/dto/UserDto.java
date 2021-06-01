@@ -2,14 +2,10 @@ package com.gyanendrokh.auth.dto;
 
 import com.gyanendrokh.auth.user.User;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
+@Data
 @AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
 public class UserDto {
 
   private String username;

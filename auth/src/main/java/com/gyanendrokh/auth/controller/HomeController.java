@@ -1,13 +1,14 @@
 package com.gyanendrokh.auth.controller;
 
 import com.gyanendrokh.auth.dto.AuthLoginDto;
+import com.gyanendrokh.auth.dto.LoginJwtDto;
 import com.gyanendrokh.auth.dto.UserDto;
 import com.gyanendrokh.auth.dto.UserRegistrationDto;
 import com.gyanendrokh.auth.service.AuthService;
 import com.gyanendrokh.auth.service.RegistrationService;
 import com.gyanendrokh.auth.user.User;
-import com.gyanendrokh.auth.user.UserEntity;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,11 +40,10 @@ public class HomeController {
     return UserDto.from(registrationService.register(data));
   }
 
+  @SneakyThrows
   @PostMapping("/login")
-  UserDto logIn(@RequestBody AuthLoginDto data) {
-    UserEntity userEntity = authService.verify(data);
-
-    return UserDto.from(new User(userEntity));
+  LoginJwtDto logIn(@RequestBody AuthLoginDto data) {
+    return authService.logIn(data);
   }
 
 }
