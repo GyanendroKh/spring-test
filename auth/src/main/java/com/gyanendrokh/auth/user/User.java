@@ -1,28 +1,32 @@
 package com.gyanendrokh.auth.user;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.HashSet;
+import java.util.Set;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter
 public class User implements UserDetails {
 
-  private String username;
-  private String password;
-  private List<? extends  GrantedAuthority> authorities = Collections.emptyList();
+  private final String username;
+  private final String password;
+  private final Collection<SimpleGrantedAuthority> authorities;
+
+  public User(String username, String password, Set<SimpleGrantedAuthority> authorities) {
+    this.username = username;
+    this.password = password;
+    this.authorities = authorities;
+
+    this.authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+  }
+
+  public User(UserEntity entity, Set<SimpleGrantedAuthority> authorities) {
+    this(entity.getUsername(), entity.getPassword(), authorities);
+  }
 
   public User(UserEntity entity) {
-    this.username = entity.getUsername();
-    this.password = entity.getPassword();
+    this(entity, new HashSet<>());
   }
 
   @Override

@@ -1,7 +1,6 @@
 package com.gyanendrokh.auth.security;
 
 import com.gyanendrokh.auth.filter.AuthenticationFilter;
-import com.gyanendrokh.auth.repository.UserRepository;
 import com.gyanendrokh.auth.user.UserDetailsService;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -20,31 +20,29 @@ import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final UserDetailsService userService;
-  private final UserRepository userRepo;
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http
       .headers().frameOptions().disable()
       .and()
-      .csrf().disable()
-      .addFilterAfter(
-        new AuthenticationFilter(userRepo),
-        UsernamePasswordAuthenticationFilter.class
-      )
-      .authorizeRequests().antMatchers("/h2-console/**").permitAll()
-      .and()
-      .authorizeRequests().antMatchers("/register").permitAll()
-      .and()
-      .authorizeRequests().antMatchers("/login").permitAll()
-      .and()
-      .authorizeRequests().anyRequest().authenticated()
-      .and()
-      .httpBasic();
+      .csrf().disable();
+
+    http.addFilterAfter(
+      new AuthenticationFilter(userService),
+      UsernamePasswordAuthenticationFilter.class
+    );
+
+    for (String url : publicUrls()) {
+      http.authorizeRequests().antMatchers(url).permitAll();
+    }
+
+    http.authorizeRequests().anyRequest().authenticated();
   }
 
   @Override
@@ -70,5 +68,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     encoders.put(encodingId, new Argon2PasswordEncoder());
 
     return new DelegatingPasswordEncoder(encodingId, encoders);
+  }
+
+  private String[] publicUrls() {
+    return new String[]{
+      "/h2-console/**",
+      "/login",
+      "/register"
+    };
   }
 }

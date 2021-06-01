@@ -1,7 +1,6 @@
 package com.gyanendrokh.auth.user;
 
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,7 @@ public class UserDetailsService implements
   private final UserDao userDao;
 
   @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+  public User loadUserByUsername(String username) throws UsernameNotFoundException {
     return userDao.findUserByUsername(username)
       .map(User::new)
       .orElseThrow(() -> new UsernameNotFoundException(getUsernameNotFoundMsg(username)));

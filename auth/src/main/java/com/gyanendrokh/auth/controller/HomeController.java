@@ -8,6 +8,7 @@ import com.gyanendrokh.auth.service.RegistrationService;
 import com.gyanendrokh.auth.user.User;
 import com.gyanendrokh.auth.user.UserEntity;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +23,14 @@ public class HomeController {
   private final AuthService authService;
 
   @GetMapping("/")
+  @PostAuthorize("hasRole('ROLE_USER')")
   UserDto index(@AuthenticationPrincipal User user) {
+    return UserDto.from(user);
+  }
+
+  @GetMapping("/admin")
+  @PostAuthorize("hasRole('ROLE_ADMIN')")
+  UserDto admin(@AuthenticationPrincipal User user) {
     return UserDto.from(user);
   }
 
