@@ -1,5 +1,7 @@
 package com.gyanendrokh.auth.security;
 
+import com.gyanendrokh.auth.filter.AuthenticationFilter;
+import com.gyanendrokh.auth.repository.UserRepository;
 import com.gyanendrokh.auth.user.UserDetailsService;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,12 +17,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final UserDetailsService userService;
+  private final UserRepository userRepo;
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
@@ -28,6 +32,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       .headers().frameOptions().disable()
       .and()
       .csrf().disable()
+      .addFilterAfter(
+        new AuthenticationFilter(userRepo),
+        UsernamePasswordAuthenticationFilter.class
+      )
       .authorizeRequests().antMatchers("/h2-console/**").permitAll()
       .and()
       .authorizeRequests().antMatchers("/register").permitAll()
